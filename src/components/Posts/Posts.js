@@ -33,7 +33,7 @@ const Posts = ({ setCurrentId }) => {
 
 export default Posts
 
-export const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme) => ({
   mainContainer: {
     display: 'flex',
     alignItems: 'center',
