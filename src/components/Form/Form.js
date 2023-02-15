@@ -1,30 +1,54 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
-import { makeStyles } from "@material-ui/core";
-import { TextField, Button, Typography, Paper } from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import makeStyles from "@mui/styles/makeStyles";
+import {
+  TextField,
+  Button,
+  Typography,
+  Paper,
+  TextareaAutosize,
+} from "@mui/material";
 import FileBase from "react-file-base64";
-import { useDispatch } from "react-redux";
-import { createPost } from "../../actions/post";
+import { useDispatch, useSelector } from "react-redux";
+import { createPost, updatePost } from "../../actions/post";
 
-const Form = (props) => {
+const Form = ({ currentId, setCurrentId }) => {
   const classes = useStyles();
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [postData, setPostData] = useState({
     user: "",
     title: "",
     content: "",
-    tags: "",
+    tags: [""],
     selectedFile: "",
   });
+  const article = useSelector((state) => currentId ? state.posts.find((p) => p._id === currentId) : null)
 
+  useEffect(() => {
+    if (article) setPostData(article)
+  }, [article])
+  
   const handleSubmit = (e) => {
-    e.preventDefault()
-    dispatch(createPost(postData))
+    e.preventDefault();
+    if (currentId) {
+      dispatch(updatePost(currentId, postData));
+    } else {
+      dispatch(createPost(postData));
+    }
+    handleClear()
   };
 
-  const handleClear = () => {};
-  
+  const handleClear = () => {
+    setCurrentId(null)
+    setPostData({
+      user: "",
+      title: "",
+      content: "",
+      tags: [""],
+      selectedFile: "",
+    })
+  };
+
 
   return (
     <div>
@@ -35,7 +59,7 @@ const Form = (props) => {
           noValidate
           onSubmit={handleSubmit}
         >
-          <Typography variant="h6">Create Article</Typography>
+          <Typography variant="h6">{ currentId ? 'Editing' : 'Creating '} Article</Typography>
           <TextField
             name="user"
             variant="outlined"
@@ -57,6 +81,15 @@ const Form = (props) => {
           />
 
           <TextField
+            name="tags"
+            variant="outlined"
+            label="Keywords"
+            value={postData.tags.join(',')}
+            onChange={(e) => setPostData({ ...postData, tags: e.target.value.split(',') })}
+            fullWidth
+          />
+
+          <TextareaAutosize
             name="content"
             variant="outlined"
             label="Content"
@@ -64,16 +97,9 @@ const Form = (props) => {
             onChange={(e) =>
               setPostData({ ...postData, content: e.target.value })
             }
-            fullWidth
-          />
-
-          <TextField
-            name="tags"
-            variant="outlined"
-            label="Keywords"
-            value={postData.tags}
-            onChange={(e) => setPostData({ ...postData, tags: e.target.value })}
-            fullWidth
+            minRows={10}
+            placeholder="Enter the content"
+            style={{ width: '94%', margin:'10px', fontFamily: 'serif', fontSize: '24' }}
           />
 
           <div className={classes.fileInput}>
@@ -86,15 +112,30 @@ const Form = (props) => {
             />
           </div>
 
-          <Button type="submit" className={classes.buttonSubmit} variant="contained" color="primary" size="large" fullWidth>Submit</Button>
-          <Button onClick={handleClear} variant="contained" color="secondary" size="small" fullWidth>Clear</Button>
+          <Button
+            type="submit"
+            className={classes.buttonSubmit}
+            variant="contained"
+            color="primary"
+            size="large"
+            fullWidth
+          >
+            Submit
+          </Button>
+          <Button
+            onClick={handleClear}
+            variant="contained"
+            color="secondary"
+            size="small"
+            fullWidth
+          >
+            Clear
+          </Button>
         </form>
       </Paper>
     </div>
   );
 };
-
-Form.propTypes = {};
 
 export default Form;
 
@@ -116,5 +157,13 @@ export const useStyles = makeStyles((theme) => ({
   },
   buttonSubmit: {
     marginBottom: 10,
+  },
+  textarea: {
+    width: "100%",
+  },
+  richTextEditor: {
+    width: "100%",
+    marginTop: 10,
+    marginBottom: 60,
   },
 }));

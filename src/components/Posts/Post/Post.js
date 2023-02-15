@@ -1,13 +1,56 @@
 import React from 'react'
-import { makeStyles } from "@material-ui/core";
+import { Card, CardActions, CardContent, CardMedia, Button, Typography } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
+import DeleteIcon from "@mui/icons-material/Delete";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import moment   from 'moment';
+import { useDispatch } from 'react-redux';
+import { likePost, removePost } from '../../../actions/post';
 
-const Post = ({ post }) => {
+ 
+const Post = ({ post, setCurrentId }) => {
   const classes = useStyles()
+  const dispatch = useDispatch()
 
   return (
     <div>
-      <h1>{post.title}</h1>
-      <p>{post.content}</p>
+      <Card className={classes.card}>
+        <CardMedia className={classes.media} image={post.selectedFile ? post.selectedFile : '../src/assets/images/pic.png' } title={post.title} />
+        <div className={classes.overlay}>
+          <Typography variant='h6'>{post.user}</Typography>
+          <Typography variant='body2'>{moment(post.createdAt).fromNow()}</Typography>
+        </div>
+
+        <div className={classes.overlay2}>
+          <Button style={{color: 'yellow'}} size='large' onClick={() => setCurrentId(post._id)}>
+            <MoreHorizIcon fontSize='large' />
+          </Button>
+        </div>
+
+        <div className={classes.details}>
+          <Typography variant='body2' color='textSecondary'>
+            { post.tags.map((tag) => (`#${tag.trim()} `))}
+          </Typography>          
+        </div>
+          <Typography variant='h5' className={classes.title} gutterBottom>{ post.title }</Typography>  
+
+        <CardContent>
+          <Typography variant='body2' color={'textSecondary'} component={'p'} gutterBottom dangerouslySetInnerHTML={{ __html: post.content }}>
+            </Typography>  
+        </CardContent>
+
+        <CardActions className={classes.cardActions}>
+          <Button size='small' color='primary' onClick={() => dispatch(likePost(post._id))}>
+            <ThumbUpAltIcon fontSize='small' />
+           &nbsp; Like &nbsp;  {post.likeCount}
+          </Button>
+          <Button size='small' color='primary' onClick={() => dispatch(removePost(post._id))}>
+            <DeleteIcon fontSize='small' />
+            &nbsp;  Delete 
+          </Button>
+        </CardActions>
+      </Card>
     </div>
   )
 }
