@@ -1,6 +1,7 @@
 import { FETCH_ALL, CREATE, UPDATE, LIKE, REMOVE } from "../actions/action-types";
 
 const reducer = (posts = [], action) => {
+  console.log(posts, action)
   switch (action.type) {
     case FETCH_ALL:
       return action.payload;
