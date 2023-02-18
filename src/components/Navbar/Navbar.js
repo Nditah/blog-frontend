@@ -18,8 +18,8 @@ const Navbar = () => {
         <Toolbar className={classes.toolbar}>
             {user? (
                 <div className={classes.profile}>
-                    <Avatar className={classes.purple} alt={user?.name} src={user?.imageUrl}>{user?.name.charAt(0)}</Avatar>
-                    <Typography variant='h6'  className={classes.username} >{user?.name}</Typography>
+                    <Avatar className={classes.purple} alt={`${user.name}`} src={`${user.imageUrl}`}>{user.name.charAt(0)}</Avatar>
+                    <Typography variant='h6'  className={classes.username} >{user.name}</Typography>
                     <Button variant='contained' className={classes.logout} color='secondary'>Logout</Button>
                 </div>
             ) : (
@@ -68,7 +68,8 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: deepPurple[500],
         color: theme.palette.getContrastText(deepPurple[500]),
     },
-    avatar: {}
+    avatar: {},
+    logout: {}
  
   }))
   
